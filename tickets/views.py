@@ -30,13 +30,23 @@ def dashboard(request):
     if status_filter:
         tickets = tickets.filter(status=status_filter)
 
+    if request.method == 'POST':
+        Ticket.objects.create(
+            title=request.POST.get('title'), 
+            # email=request.POST.get('email'), <--- REMOVE OR COMMENT THIS LINE
+            description=request.POST.get('description'),
+            urgency=request.POST.get('urgency'),
+            creator=request.user
+        )
+        return redirect('dashboard')
+
     return render(request, 'dashboard.html', {
         'tickets': tickets, 
         'query': query,
         'urgency_filter': urgency_filter,
         'status_filter': status_filter
     })
-   
+
 @login_required
 def edit_ticket(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
