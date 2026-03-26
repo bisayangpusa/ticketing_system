@@ -126,3 +126,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 # Tells Django where to go after logging out
 LOGOUT_REDIRECT_URL = 'login'
+
+## must update if railway link is changed
+CSRF_TRUSTED_ORIGINS = ['https://web-production-f0f28.up.railway.app']
