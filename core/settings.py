@@ -134,5 +134,5 @@ CSRF_TRUSTED_ORIGINS = ['https://web-production-f0f28.up.railway.app']
 
 
 # RAILWAY DATABASE postgre
-if os.environ.get('DATABASE_URL'):
+if os.environ.get('DATABASE_PUBLIC_URL'):
     DATABASES['default'] = dj_database_url.config(conn_max_age=600)
