@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+import dj_database_url, os
+
 
 from pathlib import Path
 
@@ -129,3 +131,8 @@ LOGOUT_REDIRECT_URL = 'login'
 
 ## must update if railway link is changed
 CSRF_TRUSTED_ORIGINS = ['https://web-production-f0f28.up.railway.app']
+
+
+# RAILWAY DATABASE postgre
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)

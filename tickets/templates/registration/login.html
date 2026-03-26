@@ -2,11 +2,16 @@
 
 {% block content %}
 <div class="ticket-container">
-    <h1>Login to Ticket System</h1>
-    <form method="post">
+    {% if form.errors %}
+        <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+            <strong>Error:</strong> Invalid username or password. Please try again.
+        </div>
+    {% endif %}
+
+    <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign In</button>
+        <button type="submit">Login</button>
     </form>
 </div>
 {% endblock %}
