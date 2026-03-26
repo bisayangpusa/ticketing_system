@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Submit a New Ticket</h2>
+    <form method="POST" class="ticket-form">
+        {% csrf_token %}
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="text" name="title" placeholder="Issue Subject/Title" style="flex: 2;" required>
+            <select name="urgency" style="flex: 1;">
+                <option value="LOW">Low</option>
+                <option value="MEDIUM" selected>Medium</option>
+                <option value="HIGH">High</option>
+            </select>
+        </div>
+        <textarea name="description" placeholder="Describe the problem in detail..." required></textarea>
+        <button type="submit">Submit Ticket</button>
+    </form>
+
+    <hr>
+    
+    <form method="GET" action="{% url 'dashboard' %}" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search tickets..." style="flex: 2;">
+
+    <select name="urgency" style="flex: 1;">
+        <option value="">All Urgency</option>
+        <option value="LOW" {% if urgency_filter == 'LOW' %}selected{% endif %}>Low</option>
+        <option value="MEDIUM" {% if urgency_filter == 'MEDIUM' %}selected{% endif %}>Medium</option>
+        <option value="HIGH" {% if urgency_filter == 'HIGH' %}selected{% endif %}>High</option>
+    </select>
+
+    <select name="status" style="flex: 1;">
+        <option value="">All Status</option>
+        <option value="OPEN" {% if status_filter == 'OPEN' %}selected{% endif %}>Open</option>
+        <option value="IN_PROGRESS" {% if status_filter == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+        <option value="RESOLVED" {% if status_filter == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+    </select>
+
+    <button type="submit" style="width: auto;">Filter</button>
+    {% if query or urgency_filter or status_filter %}
+        <a href="{% url 'dashboard' %}" style="font-size: 0.8em; color: gray; text-decoration: none;">Reset</a>
+    {% endif %}
+</form>
+
+    <h2>Recent Tickets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>ID (UUID)</th>
+                <th>Creator</th>
+                <th>Status</th>
+                <th>Urgency</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tbody>
+    {% for t in tickets %}
+    <tr>
+    <td><strong>{{ t.title }}</strong></td>
+    <td><code style="font-size: 0.8em;">{{ t.ticket_id|stringformat:".8s" }}</code></td>
+    <td>{{ t.creator.username }}</td>
+    <td>
+        <span class="badge status-{{ t.status|lower }}" style="padding: 3px 8px; border-radius: 12px; color: white; background-color: {% if t.status == 'OPEN' %}#ffc107{% elif t.status == 'RESOLVED' %}#28a745{% else %}#17a2b8{% endif %};"> 
+            <!--Ginawang Hard coded ko na itong yung urgency colors kasi naging 30 mins na yung minor issue nato takte -->
+            {{ t.get_status_display }}
+        </span>
+    </td>
+    <td>
+        <span class="urgency-text urgency-{{ t.urgency|lower }}">
+            {{ t.get_urgency_display }}
+        </span>
+    </td>
+    <td><a href="{% url 'edit_ticket' t.pk %}" style="font-weight: bold;">Edit/View</a></td>
+</tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center; padding: 20px; color: #888;">No tickets found.</td></tr>
+    {% endfor %}
+</tbody>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

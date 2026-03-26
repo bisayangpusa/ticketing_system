@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Edit Ticket #{{ ticket.id }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Status</label>
+        <select name="status">
+            {% for code, name in ticket.STATUS_CHOICES %}
+                <option value="{{ code }}" {% if ticket.status == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Urgency</label>
+        <select name="urgency">
+            {% for code, name in ticket.URGENCY_CHOICES %}
+                <option value="{{ code }}" {% if ticket.urgency == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Description</label>
+        <textarea name="description" rows="5">{{ ticket.description }}</textarea>
+
+        <button type="submit">Confirm Changes</button>
+        <a href="{% url 'dashboard' %}" style="display:block; text-align:center; margin-top:10px; color:gray;">Cancel</a>
+	   <div class="history-section" style="margin-top: 40px; border-top: 2px solid #eee; padding-top: 20px;">
+	    <h3>Activity Log (History)</h3>
+	    {% for log in ticket.history.all %}
+	        <div style="background: #fdfdfd; border-left: 4px solid #2a5298; padding: 10px; margin-bottom: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);">
+	            <p style="margin: 0; font-size: 0.9em; color: #555;">
+	                <strong>{{ log.user.username }}</strong> on {{ log.timestamp|date:"M d, Y H:i" }}
+	            </p>
+	            <p style="margin: 5px 0 0 0; font-family: monospace; font-size: 0.85em;">
+	                {{ log.changes }}
+	            </p>
+	        </div>
+	    {% empty %}
+	        <p style="color: #999;">No history available for this ticket.</p>
+	    {% endfor %}
+	</div>
+    </form>
+{% endblock %}

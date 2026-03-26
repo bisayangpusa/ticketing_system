@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<style>
+	/* Status Badge Colors */
+	.badge {
+	    padding: 4px 10px;
+	    border-radius: 12px;
+	    font-size: 0.85em;
+	    font-weight: bold;
+	    color: white;
+	    display: inline-block;
+	}
+
+	.status-open { background-color: #ffc107; color: #212529; }      /* Yellow */
+	.status-in_progress { background-color: #17a2b8; }                /* Cyan */
+	.status-resolved { background-color: #28a745; }                 /* Green */
+
+	/* Urgency Text Colors */
+.urgency-text {
+    font-weight: bold; /* Makes the text bold */
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.urgency-high { color: #d9534f; }   /* Strategic Red for High */
+.urgency-medium { color: #f0ad4e; } /* Orange/Yellow for Medium */
+.urgency-low { color: #5cb85c; }    /* Green for Low */
+</style>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticketing System</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(135deg,#1e3c72,#2a5298); padding: 30px; min-height: 100vh; color: #333; }
+        .container { background: white; max-width: 900px; margin: auto; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        h1, h2 { color: #2a5298; text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #f8f9fa; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; color: white; }
+        .open { background: orange; } .resolved { background: green; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+        button { background: #2a5298; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+    </style>
+</head>
+<nav style="text-align: right; margin-bottom: 20px;">
+    {% if user.is_authenticated %}
+        <span style="color: white;">Welcome, {{ user.username }}</span> | 
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" style="width: auto; padding: 5px 10px; background: #dc3545;">Logout</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</nav>
+<body>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
