@@ -41,44 +41,37 @@
         <a href="{% url 'dashboard' %}" style="font-size: 0.8em; color: gray; text-decoration: none;">Reset</a>
     {% endif %}
 </form>
+<div style="margin-bottom: 20px;">
+    {% if show_completed %}
+        <a href="?show_completed=false" class="w3-button w3-light-gray w3-border">Hide Completed Tickets</a>
+    {% else %}
+        <a href="?show_completed=true" class="w3-button w3-blue">Show Completed Tickets</a>
+    {% endif %}
+</div>
 
-    <h2>Recent Tickets</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>ID (UUID)</th>
-                <th>Creator</th>
-                <th>Status</th>
-                <th>Urgency</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tbody>
-    {% for t in tickets %}
-    <tr>
-    <td><strong>{{ t.title }}</strong></td>
-    <td><code style="font-size: 0.8em;">{{ t.ticket_id|stringformat:".8s" }}</code></td>
-    <td>{{ t.creator.username }}</td>
-    <td>
-        <span class="badge status-{{ t.status|lower }}" style="padding: 3px 8px; border-radius: 12px; color: white; background-color: {% if t.status == 'OPEN' %}#ffc107{% elif t.status == 'RESOLVED' %}#28a745{% else %}#17a2b8{% endif %};"> 
-            <!--Ginawang Hard coded ko na itong yung urgency colors kasi naging 30 mins na yung minor issue nato takte -->
-            {{ t.get_status_display }}
-        </span>
-    </td>
-    <td>
-        <span class="urgency-text urgency-{{ t.urgency|lower }}">
-            {{ t.get_urgency_display }}
-        </span>
-    </td>
-    <td><a href="{% url 'edit_ticket' t.pk %}" style="font-weight: bold;">Edit/View</a></td>
-</tr>
-    {% empty %}
-    <tr><td colspan="6" style="text-align:center; padding: 20px; color: #888;">No tickets found.</td></tr>
-    {% endfor %}
-</tbody>
-        </tbody>
-    </table>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>ID</th>
+            <th>Worker</th> <th>Updates</th> <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in tickets %}
+        <tr>
+            <td><strong>{{ t.title }}</strong></td>
+            <td><code>{{ t.ticket_id|stringformat:".8s" }}</code></td>
+            <td>{{ t.current_worker.username|default:"Unassigned" }}</td> <td><span class="w3-badge w3-small w3-green">{{ t.update_count }}</span></td> <td>
+                <span class="badge" style="background-color: {% if t.is_completed %}#6c757d{% elif t.status == 'OPEN' %}#ffc107{% else %}#28a745{% endif %}; color: white; padding: 2px 8px; border-radius: 10px;">
+                    {% if t.is_completed %}COMPLETED{% else %}{{ t.get_status_display }}{% endif %}
+                </span>
+            </td>
+            <td><a href="{% url 'edit_ticket' t.pk %}">Edit</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 </div>
 {% endblock %}

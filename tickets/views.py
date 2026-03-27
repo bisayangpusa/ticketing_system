@@ -2,20 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 
 from .models import Ticket, TicketHistory
-from .forms import TicketForm
+from .forms import TicketForm, TicketUpdateForm
 
 
 from django.contrib.auth.decorators import login_required
 
 @login_required
 def dashboard(request):
+    # Check if the user wants to see completed tickets
+    show_completed = request.GET.get('show_completed') == 'true'
     query = request.GET.get('q', '')
-    urgency_filter = request.GET.get('urgency', '')
-    status_filter = request.GET.get('status', '')
-
+    
+    # Base queryset: Order by newest first
     tickets = Ticket.objects.all().order_by('-created_at')
     
-    # Text Search (Title, UUID, Description)
+    # NEW: Hide completed tickets by default
+    if not show_completed:
+        tickets = tickets.filter(is_completed=False)
+    
+    # Keep your existing search logic
     if query:
         tickets = tickets.filter(
             Q(title__icontains=query) | 
@@ -23,17 +28,10 @@ def dashboard(request):
             Q(description__icontains=query)
         )
 
-    # Specific Dropdown Filters
-    if urgency_filter:
-        tickets = tickets.filter(urgency=urgency_filter)
-    
-    if status_filter:
-        tickets = tickets.filter(status=status_filter)
-
+    # Keep your existing POST logic for creating tickets
     if request.method == 'POST':
         Ticket.objects.create(
             title=request.POST.get('title'), 
-            # email=request.POST.get('email'), <--- REMOVE OR COMMENT THIS LINE
             description=request.POST.get('description'),
             urgency=request.POST.get('urgency'),
             creator=request.user
@@ -43,9 +41,10 @@ def dashboard(request):
     return render(request, 'dashboard.html', {
         'tickets': tickets, 
         'query': query,
-        'urgency_filter': urgency_filter,
-        'status_filter': status_filter
+        'show_completed': show_completed  # Pass this to the template
     })
+
+
 
 @login_required
 def edit_ticket(request, pk):
@@ -53,27 +52,38 @@ def edit_ticket(request, pk):
     
     if request.method == 'POST':
         old_desc = ticket.description
-        new_desc = request.POST.get('description')
-        new_status = request.POST.get('status')
+        old_status = ticket.status
         
-        # Determine what changed for the log
-        changes_list = []
-        if old_desc != new_desc:
-            changes_list.append(f"Description changed from '{old_desc[:30]}...' to '{new_desc[:30]}...'")
-        if ticket.status != new_status:
-            changes_list.append(f"Status changed to {new_status}")
+        form = TicketUpdateForm(request.POST, instance=ticket)
+        
+        if form.is_valid():
+            # 1. Save the form first to get the new data
+            updated_ticket = form.save(commit=False)
+            
+            # 2. Increment the count
+            updated_ticket.update_count += 1
+            updated_ticket.save()
 
-        ticket.description = new_desc
-        ticket.status = new_status
-        ticket.urgency = request.POST.get('urgency')
-        ticket.save()
+            # 3. Build the changes list
+            changes_list = []
+            if old_desc != updated_ticket.description:
+                changes_list.append("Description updated")
+            if old_status != updated_ticket.status:
+                changes_list.append(f"Status: {updated_ticket.status}")
+            
+            # If no specific desc/status changed, add a general label
+            if not changes_list:
+                changes_list.append("Ticket details/worker updated")
 
-        if changes_list:
+            # 4. ALWAYS create a history record if the form was saved
             TicketHistory.objects.create(
-                ticket=ticket,
+                ticket=updated_ticket,
                 user=request.user,
                 changes=" | ".join(changes_list)
             )
-        return redirect('dashboard')
+                
+            return redirect('dashboard')
+    else:
+        form = TicketUpdateForm(instance=ticket)
 
-    return render(request, 'edit_ticket.html', {'ticket': ticket})
+    return render(request, 'edit_ticket.html', {'form': form, 'ticket': ticket})

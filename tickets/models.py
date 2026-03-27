@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 class Ticket(models.Model):
     STATUS_CHOICES = [('OPEN', 'Open'), ('IN_PROGRESS', 'In Progress'), ('RESOLVED', 'Resolved')]
@@ -18,6 +19,13 @@ class Ticket(models.Model):
     urgency = models.CharField(max_length=20, choices=URGENCY_CHOICES, default='MEDIUM')
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # New Fields
+    current_worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tickets')
+    next_step = models.TextField(blank=True, null=True)
+    business_impact = models.TextField(blank=True, null=True)
+    is_completed = models.BooleanField(default=False) # To hide/show in dashboard
+    update_count = models.IntegerField(default=0) # History increment
 
     def __str__(self):
         return f"#{self.ticket_id} - {self.title}"
