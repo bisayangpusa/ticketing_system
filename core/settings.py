@@ -14,6 +14,13 @@ import dj_database_url, os
 
 from pathlib import Path
 
+from environ import Env
+
+env = Env()
+Env.read_env()
+ENVIRONMENT = env('ENVIRONMENT', default = 'production')
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,11 +29,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f85d4_okoy8(bq=qplrj1uhfgm*94e^3ap@g35g7x)pps#q$e$'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
 ALLOWED_HOSTS = ['*'] # For initial testing; 
 
 
@@ -45,6 +54,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,6 +92,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 
 # Password validation
@@ -134,6 +148,6 @@ CSRF_TRUSTED_ORIGINS = ['https://web-production-f0f28.up.railway.app']
 
 db_from_env = os.environ.get('DATABASE_PUBLIC_URL')# or os.environ.get('DATABASE_URL')
 
-# RAILWAY DATABASE postgre
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
