@@ -36,8 +36,9 @@ if ENVIRONMENT == 'development':
     DEBUG = True
 else:
     DEBUG = False
-ALLOWED_HOSTS = ['*'] # For initial testing; 
-
+#ALLOWED_HOSTS = ['*'] # For initial testing; 
+ALLOWED_HOSTS = ['localhost','127.0.0.1','ticketingsystem-production-e892.up.railway.app']
+CSRF_TRUSTED_ORIGINS=['https://ticketingsystem-production-e892.up.railway.app']
 
 # Application definition
 
@@ -143,11 +144,12 @@ LOGIN_REDIRECT_URL = 'dashboard'
 # Tells Django where to go after logging out
 LOGOUT_REDIRECT_URL = 'login'
 
-## must update if railway link is changed
-CSRF_TRUSTED_ORIGINS = ['https://web-production-f0f28.up.railway.app']
-
 db_from_env = os.environ.get('DATABASE_PUBLIC_URL')# or os.environ.get('DATABASE_URL')
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+POSTGRES_LOCALLY = True
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == True:
+    DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
