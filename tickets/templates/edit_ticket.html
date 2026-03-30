@@ -64,11 +64,15 @@
             <div class="w3-panel w3-white w3-card-2 w3-leftbar w3-border-blue w3-padding-small">
                 <div class="w3-row">
                     <div class="w3-col s1">
-                        <span class="w3-tag w3-blue w3-round">#{{ forloop.revcounter }}</span>
+                        <span class="w3-tag w3-blue w3-round">#{{ forloop.counter }}</span>
                     </div>
                     <div class="w3-col s11">
+                        <!--
                         <p style="margin: 0;">
                             <strong>{{ log.user.username }}</strong> on {{ log.created_at|date:"M d, Y H:i" }}
+                        </p>-->
+                        <p class="w3-text-dark-grey" style="margin-top: 5px;">
+                            {{ log.changes|linebreaksbr }}
                         </p>
                         <p class="w3-text-dark-grey" style="margin-top: 5px;">{{ log.changes }}</p>
                     </div>

@@ -51,35 +51,51 @@ def edit_ticket(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
     
     if request.method == 'POST':
-        old_desc = ticket.description
-        old_status = ticket.status
+        # Store old values for comparison
+        old_values = {
+            'worker': ticket.current_worker,
+            'next_step': ticket.next_step,
+            'impact': ticket.business_impact,
+            'status': ticket.status,
+            'urgency': ticket.urgency,
+            'desc': ticket.description
+        }
         
         form = TicketUpdateForm(request.POST, instance=ticket)
         
         if form.is_valid():
-            # 1. Save the form first to get the new data
             updated_ticket = form.save(commit=False)
-            
-            # 2. Increment the count
             updated_ticket.update_count += 1
             updated_ticket.save()
 
-            # 3. Build the changes list
+            # Build detailed changes list
             changes_list = []
-            if old_desc != updated_ticket.description:
-                changes_list.append("Description updated")
-            if old_status != updated_ticket.status:
-                changes_list.append(f"Status: {updated_ticket.status}")
+            if old_values['worker'] != updated_ticket.current_worker:
+                changes_list.append(f"Worker: {updated_ticket.current_worker}")
             
-            # If no specific desc/status changed, add a general label
-            if not changes_list:
-                changes_list.append("Ticket details/worker updated")
+            if old_values['next_step'] != updated_ticket.next_step:
+                changes_list.append(f"Next Step: {updated_ticket.next_step}")
 
-            # 4. ALWAYS create a history record if the form was saved
+            if old_values['impact'] != updated_ticket.business_impact:
+                changes_list.append(f"Impact: {updated_ticket.business_impact}")
+
+            if old_values['status'] != updated_ticket.status:
+                changes_list.append(f"Status: {updated_ticket.get_status_display()}")
+
+            if old_values['urgency'] != updated_ticket.urgency:
+                changes_list.append(f"Urgency: {updated_ticket.urgency}")
+
+            if old_values['desc'] != updated_ticket.description:
+                changes_list.append("Description updated")
+            
+            # Fallback if nothing specific changed
+            if not changes_list:
+                changes_list.append("General details updated")
+
             TicketHistory.objects.create(
                 ticket=updated_ticket,
                 user=request.user,
-                changes=" | ".join(changes_list)
+                changes="\n".join(changes_list) # Changed " | " to "\n"
             )
                 
             return redirect('dashboard')
