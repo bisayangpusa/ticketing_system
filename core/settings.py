@@ -24,6 +24,9 @@ ENVIRONMENT = env('ENVIRONMENT', default = 'production')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env_file = os.path.join(BASE_DIR, ".env")
+if os.path.exists(env_file):
+    Env.read_env(env_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/

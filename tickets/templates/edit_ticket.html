@@ -66,15 +66,27 @@
                     <div class="w3-col s1">
                         <span class="w3-tag w3-blue w3-round">#{{ forloop.counter }}</span>
                     </div>
+                    <!--
                     <div class="w3-col s11">
-                        <!--
+                        
                         <p style="margin: 0;">
                             <strong>{{ log.user.username }}</strong> on {{ log.created_at|date:"M d, Y H:i" }}
-                        </p>-->
+                        </p
                         <p class="w3-text-dark-grey" style="margin-top: 5px;">
                             {{ log.changes|linebreaksbr }}
                         </p>
                         <p class="w3-text-dark-grey" style="margin-top: 5px;">{{ log.changes }}</p>
+                    </div>
+                    -->
+                    <div class="w3-col s11">
+                        <p style="margin: 0; font-size: 0.9em;" class="w3-opacity">
+                            <strong>{{ log.user.username }}</strong> updated this on {{ log.created_at|date:"M d, Y H:i" }}
+                        </p>
+                        
+                        <div class="w3-text-dark-grey" style="margin-top: 8px; line-height: 1.5;">
+                            {{ log.changes|linebreaksbr }}
+                        </div>
+                        
                     </div>
                 </div>
             </div>

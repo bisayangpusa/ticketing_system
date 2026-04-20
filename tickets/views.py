@@ -51,14 +51,13 @@ def edit_ticket(request, pk):
     ticket = get_object_or_404(Ticket, pk=pk)
     
     if request.method == 'POST':
-        # Store old values for comparison
+        # Store ALL old values before the form overwrites them
         old_values = {
+            'description': ticket.description,
+            'status': ticket.status,
             'worker': ticket.current_worker,
             'next_step': ticket.next_step,
             'impact': ticket.business_impact,
-            'status': ticket.status,
-            'urgency': ticket.urgency,
-            'desc': ticket.description
         }
         
         form = TicketUpdateForm(request.POST, instance=ticket)
@@ -68,8 +67,9 @@ def edit_ticket(request, pk):
             updated_ticket.update_count += 1
             updated_ticket.save()
 
-            # Build detailed changes list
             changes_list = []
+            
+            # Compare and capture the NEW values
             if old_values['worker'] != updated_ticket.current_worker:
                 changes_list.append(f"Worker: {updated_ticket.current_worker}")
             
@@ -80,22 +80,20 @@ def edit_ticket(request, pk):
                 changes_list.append(f"Impact: {updated_ticket.business_impact}")
 
             if old_values['status'] != updated_ticket.status:
-                changes_list.append(f"Status: {updated_ticket.get_status_display()}")
+                changes_list.append(f"Status: {updated_ticket.status}")
 
-            if old_values['urgency'] != updated_ticket.urgency:
-                changes_list.append(f"Urgency: {updated_ticket.urgency}")
-
-            if old_values['desc'] != updated_ticket.description:
-                changes_list.append("Description updated")
+            if old_values['description'] != updated_ticket.description:
+                # This shows the actual new description text
+                changes_list.append(f"Description: {updated_ticket.description}")
             
-            # Fallback if nothing specific changed
             if not changes_list:
-                changes_list.append("General details updated")
+                changes_list.append("No visible changes made")
 
+            # Save with NEWLINE (\n) so it displays as a list in the template
             TicketHistory.objects.create(
                 ticket=updated_ticket,
                 user=request.user,
-                changes="\n".join(changes_list) # Changed " | " to "\n"
+                changes="\n".join(changes_list)
             )
                 
             return redirect('dashboard')
