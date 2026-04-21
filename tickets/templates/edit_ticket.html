@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="w3-container" style="max-width: 800px; margin: auto;">
-    <h1 class="w3-border-bottom w3-padding-16">Edit Ticket #{{ ticket.id|stringformat:".8s" }}</h1>
+    <h1 class="w3-border-bottom w3-padding-16">{{ ticket.title }}</h1>
     
     <div class="w3-card-4 w3-white w3-margin-bottom">
         <header class="w3-container w3-blue">
@@ -85,7 +85,7 @@
                         </p>
                         
                         -->
-                        <div class="w3-text-dark-grey w3-card-2" style="margin-top: 8px; line-height: 1.5;">
+                        <div class="w3-text-dark-grey" style="margin-top: 8px; line-height: 1.5;">
                             {{ log.changes|linebreaksbr }}
                         </div>
                         
