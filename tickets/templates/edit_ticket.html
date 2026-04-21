@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <a href="{% url 'dashboard' %}" class="w3-button w3-light-gray w3-round">Back to Dashboard</a>
 <div class="w3-container" style="max-width: 800px; margin: auto;">
     <h1 class="w3-border-bottom w3-padding-16">{{ ticket.title }}</h1>
     
