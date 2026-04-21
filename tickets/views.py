@@ -76,14 +76,14 @@ def edit_ticket(request, pk):
             
 
             if old_values['impact'] != updated_ticket.business_impact:
-                changes_list.append(f"Impact: {updated_ticket.business_impact}")
+                changes_list.append(f"\nImpact: {updated_ticket.business_impact}")
 
             if old_values['status'] != updated_ticket.status:
-                changes_list.append(f"Status: {updated_ticket.status}")
+                changes_list.append(f"\nStatus: {updated_ticket.status}")
 
             if old_values['description'] != updated_ticket.description:
                 # This shows the actual new description text
-                changes_list.append(f"{updated_ticket.description}")
+                changes_list.append(f"\n{updated_ticket.description}")
             
             if not changes_list:
                 changes_list.append("No visible changes made")
@@ -98,7 +98,7 @@ def edit_ticket(request, pk):
                 changes="\n".join(changes_list)
             )
                 
-            return redirect('dashboard')
+            return redirect('edit_ticket', pk=ticket.pk)
     else:
         form = TicketUpdateForm(instance=ticket)
 

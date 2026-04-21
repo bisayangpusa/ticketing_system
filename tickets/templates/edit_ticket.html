@@ -57,45 +57,46 @@
         </form>
     </div>
 
-    <div class="w3-container w3-margin-top">
-        <h3 class="w3-border-bottom">Activity Log ({{ ticket.update_count }} Updates)</h3>
-        
-        {% for log in ticket.history.all %}
-            <div class="w3-panel w3-white w3-card-2 w3-leftbar w3-border-blue w3-padding-small">
-                <div class="w3-row">
-                    <div class="w3-col s1">
-                        <span class="w3-tag w3-blue w3-round">#{{ forloop.counter }}</span>
-                    </div>
-                    <!--
-                    <div class="w3-col s11">
-                        
-                        <p style="margin: 0;">
-                            <strong>{{ log.user.username }}</strong> on {{ log.created_at|date:"M d, Y H:i" }}
-                        </p
-                        <p class="w3-text-dark-grey" style="margin-top: 5px;">
-                            {{ log.changes|linebreaksbr }}
-                        </p>
-                        <p class="w3-text-dark-grey" style="margin-top: 5px;">{{ log.changes }}</p>
-                    </div>
-                    -->
-                    <div class="w3-col s11 ">
-                        <p style="margin: 0; font-size: 0.9em;" class="w3-opacity">
-                        <!--
-                            <strong>{{ log.user.username }}</strong> updated this on {{ log.created_at|date:"M d, Y H:i" }}
-                        </p>
-                        
-                        -->
-                        <div class="w3-text-dark-grey" style="margin-top: 8px; line-height: 1.5;">
-                            {{ log.changes|linebreaksbr }}
-                        </div>
-                        
+   <div class="w3-container w3-margin-top">
+    <h3 class="w3-border-bottom">Activity Log ({{ ticket.update_count }} Updates)</h3>
+    
+    <div class="w3-panel w3-white w3-card-2 w3-leftbar w3-border-gray w3-padding-small">
+        <div class="w3-row">
+            <div class="w3-col s1">
+                <span class="w3-tag w3-gray w3-round">#0</span>
+            </div>
+            <div class="w3-col s11">
+                <p style="margin: 0; font-size: 0.9em;" class="w3-opacity">
+                    <strong>{{ ticket.creator.username }}</strong> created this ticket <!--on {{ ticket.created_at|date:"M d, Y H:i" }} -->
+                </p>
+                <div class="w3-text-dark-grey" style="margin-top: 8px; line-height: 1.5;">
+                    Title: {{ ticket.title }}<br>
+                    Urgency: {{ ticket.urgency }}<br><br>
+                    {{ ticket.description|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for log in ticket.history.all %}
+        <div class="w3-panel w3-white w3-card-2 w3-leftbar w3-border-blue w3-padding-small">
+            <div class="w3-row">
+                <div class="w3-col s1">
+                    <span class="w3-tag w3-blue w3-round">#{{ forloop.counter }}</span>
+                </div>
+                <div class="w3-col s11">
+                    <p style="margin: 0; font-size: 0.9em;" class="w3-opacity">
+                        <strong>{{ log.user.username }}</strong> updated this ticket <!--on {{ log.created_at|date:"M d, Y H:i" }} -->
+                    </p>
+                    <div class="w3-text-dark-grey" style="margin-top: 8px; line-height: 1.5;">
+                        {{ log.changes|linebreaksbr }}
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <p class="w3-text-grey">No history records found in the database.</p>
-        {% endfor %}
-    </div>
+        </div>
+    {% empty %}
+        <p class="w3-text-grey">No updates have been made to this ticket yet.</p>
+    {% endfor %}
+</div>
 </div>
 
 <style>
