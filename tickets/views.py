@@ -73,8 +73,7 @@ def edit_ticket(request, pk):
             if old_values['worker'] != updated_ticket.current_worker:
                 changes_list.append(f"Worker: {updated_ticket.current_worker}")
             
-            if old_values['next_step'] != updated_ticket.next_step:
-                changes_list.append(f"Next Step: {updated_ticket.next_step}")
+            
 
             if old_values['impact'] != updated_ticket.business_impact:
                 changes_list.append(f"Impact: {updated_ticket.business_impact}")
@@ -88,6 +87,9 @@ def edit_ticket(request, pk):
             
             if not changes_list:
                 changes_list.append("No visible changes made")
+
+            if old_values['next_step'] != updated_ticket.next_step:
+                changes_list.append(f"\nNext Step: {updated_ticket.next_step}")
 
             # Save with NEWLINE (\n) so it displays as a list in the template
             TicketHistory.objects.create(
