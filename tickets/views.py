@@ -84,7 +84,7 @@ def edit_ticket(request, pk):
 
             if old_values['description'] != updated_ticket.description:
                 # This shows the actual new description text
-                changes_list.append(f"Description: {updated_ticket.description}")
+                changes_list.append(f"{updated_ticket.description}")
             
             if not changes_list:
                 changes_list.append("No visible changes made")
