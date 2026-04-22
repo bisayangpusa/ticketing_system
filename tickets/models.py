@@ -3,6 +3,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from django.utils import timezone
+
 class Ticket(models.Model):
     STATUS_CHOICES = [('OPEN', 'Open'), ('IN_PROGRESS', 'In Progress'), ('RESOLVED', 'Resolved')]
     URGENCY_CHOICES = [('LOW', 'Low'), ('MEDIUM', 'Medium'), ('HIGH', 'High')]
@@ -35,4 +37,5 @@ class TicketHistory(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name='history')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     changes = models.TextField() 
-    timestamp = models.DateTimeField(auto_now_add=True)
+    #timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now)
