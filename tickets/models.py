@@ -20,7 +20,7 @@ class Ticket(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='OPEN')
     urgency = models.CharField(max_length=20, choices=URGENCY_CHOICES, default='MEDIUM')
     description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     # New Fields
     current_worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tickets')
